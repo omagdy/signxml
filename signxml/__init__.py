@@ -469,19 +469,24 @@ class XMLSigner(XMLSignatureProcessor):
         return sig_root, doc_root, c14n_inputs, reference_uris
 
     def _build_sig(self, sig_root, reference_uris, c14n_inputs):
-        signed_info = SubElement(sig_root, ds_tag("SignedInfo"), nsmap=self.namespaces)
-        c14n_method = SubElement(signed_info, ds_tag("CanonicalizationMethod"), Algorithm=self.c14n_alg)
+        # signed_info = SubElement(sig_root, ds_tag("SignedInfo"), nsmap=self.namespaces)
+        signed_info = SubElement(sig_root, "SignedInfo")
+        # c14n_method = SubElement(signed_info, ds_tag("CanonicalizationMethod"), Algorithm=self.c14n_alg)
+        c14n_method = SubElement(signed_info, "CanonicalizationMethod", Algorithm=self.c14n_alg)
         if self.sign_alg.startswith("hmac-"):
             algorithm_id = self.known_hmac_digest_tags[self.sign_alg]
         else:
             algorithm_id = self.known_signature_digest_tags[self.sign_alg]
-        signature_method = SubElement(signed_info, ds_tag("SignatureMethod"), Algorithm=algorithm_id)
+        # signature_method = SubElement(signed_info, ds_tag("SignatureMethod"), Algorithm=algorithm_id)
+        signature_method = SubElement(signed_info, "SignatureMethod", Algorithm=algorithm_id)
         for i, reference_uri in enumerate(reference_uris):
-            reference = SubElement(signed_info, ds_tag("Reference"), URI=reference_uri)
+            # reference = SubElement(signed_info, ds_tag("Reference"), URI=reference_uri)
+            reference = SubElement(signed_info, "Reference", URI=reference_uri)
             if self.method == methods.enveloped:
                 transforms = SubElement(reference, ds_tag("Transforms"))
-                SubElement(transforms, ds_tag("Transform"), Algorithm=namespaces.ds + "enveloped-signature")
-                SubElement(transforms, ds_tag("Transform"), Algorithm=self.c14n_alg)
+                # SubElement(transforms, ds_tag("Transform"), Algorithm=namespaces.ds + "enveloped-signature")
+                SubElement(transforms, "Transform", Algorithm=namespaces.ds + "enveloped-signature")
+               # SubElement(transforms, ds_tag("Transform"), Algorithm=self.c14n_alg)
             digest_method = SubElement(reference, ds_tag("DigestMethod"),
                                        Algorithm=self.known_digest_tags[self.digest_alg])
             digest_value = SubElement(reference, ds_tag("DigestValue"))
